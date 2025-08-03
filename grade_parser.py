@@ -1,8 +1,17 @@
 import csv
-
+from student import Student
 
 class GradeParser:
-    def __init__(self, file_path):
+    def __init__(self, file_path: str) -> None:
+        """
+        Initializes the grade file parser given the path to the grade file
+
+        Parameters:
+            file_path (str): The path to the grade file
+
+        Returns:
+            None
+        """
         self.file_path = file_path
         self.assignments = []
         self.assignment_titles = []
@@ -11,7 +20,16 @@ class GradeParser:
 
         self.parse_info()
 
-    def parse_info(self):
+    def parse_info(self) -> None:
+        """
+        Parses the grade file to extract the student data and grades
+
+        Parameters:
+            None
+
+        Returns:
+            None
+        """
         with open(self.file_path, "r") as file:
             reader = csv.reader(file)
 
@@ -19,9 +37,29 @@ class GradeParser:
             header = next(reader)
             self.parse_assignments(header)
 
-            # Get the student data
+            # Skip the next two rows (not student data) for now
+            next(reader)
+            next(reader)
 
-    def parse_assignments(self, header):
+            # Read in all the student data and grades
+            for row in reader:
+                # Extract the student's identifying information
+                last_name, first_name = row[0].split(", ")
+                student_id = row[2]
+                section = row[3]
+
+                # Create a student profile
+                student = Student(first_name, last_name, student_id, section)
+
+                # Extract the student's grades
+                start_index = header.index("Section") + 1
+                for assignment_index in range(len(self.assignments)):
+                    grade = row[start_index + assignment_index]
+                    student.add_grade(self.assignments[assignment_index], grade)
+
+                self.student_data.append(student)
+
+    def parse_assignments(self, header: list) -> None:
         """
         Using the header row, extract the relevant assignment column names
 

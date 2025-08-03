@@ -1,5 +1,5 @@
 class Student:
-    def __init__(self, first_name: str, last_name: str, user_id: str, section: str) -> None:
+    def __init__(self, first_name: str, last_name: str, student_id: str, section: str) -> None:
         """ 
         Initializes a student profile using their identifying information
         along with their grades for each assignment
@@ -7,7 +7,7 @@ class Student:
 
         self.first_name = first_name
         self.last_name = last_name
-        self.user_id = user_id
+        self.student_id = student_id
         self.section = section
 
         self.grades = {}
@@ -50,7 +50,7 @@ class Student:
         """
         return f"{self.first_name} {self.last_name}"
     
-    def get_user_id(self) -> str:
+    def get_student_id(self) -> str:
         """
         Returns the student's user ID
 
@@ -60,7 +60,7 @@ class Student:
         Returns:
             str: The student's user ID
         """
-        return self.user_id
+        return self.student_id
     
     def get_section(self) -> str:
         """
