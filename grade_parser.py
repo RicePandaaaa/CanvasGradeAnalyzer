@@ -16,10 +16,29 @@ class GradeParser:
         self.file_object = file_object
         self.assignments = []
         self.assignment_titles = []
+        self.assignment_max_points = []
         self.student_data = []
         self.df = None  # Store the Polars DataFrame
         
         self.parse_info()
+
+    def is_actual_grade(self, grade: str) -> bool:
+        """
+        Checks if the grade is a valid grade
+
+        Parameters:
+            grade (str): The grade to check
+
+        Returns:
+            bool: True if the grade is a valid grade, False otherwise
+        """        
+        # If the grade is a string, check if it's a number
+        try:
+            # Check if the grade is a number
+            float(grade)
+            return True
+        except ValueError:
+            return False
 
     def load_dataframe(self) -> pl.DataFrame:
         """
@@ -59,11 +78,14 @@ class GradeParser:
         # Load the DataFrame
         self.df = self.load_dataframe()
         
-        # Get column names
+        # Get column names and the row after with the max points available
         header = self.df.columns
-        self.parse_assignments(header)
-        
-        # Skip the first two data rows (they're not student data)
+
+        # Find the row that starts with "Points Possible"
+        max_points_row = self.df.filter(pl.col("Student").str.contains("Points Possible")).row(0)
+        self.parse_assignments(header, max_points_row)
+
+        # Extract the student data
         student_rows = self.df.slice(2)
         
         # Process each student row
@@ -85,14 +107,14 @@ class GradeParser:
                 student.add_grade(assignment, grade)
             
             self.student_data.append(student)
-                
 
-    def parse_assignments(self, header: list) -> None:
+    def parse_assignments(self, header: list, max_points_row: list) -> None:
         """
         Using the header row, extract the relevant assignment column names
 
         Parameters:
             header (list): The header row (column names) of the CSV file
+            max_points_row (list): The row after the header row with the max points available
 
         Returns:
             None
@@ -102,6 +124,8 @@ class GradeParser:
         end_index = header.index("Current Score")
         
         self.assignments = header[start_index:end_index]
+        print("--------------------------------")
+        print(self.assignments)
         
         # Ignore categorical columns (Current Score, Unposted Current Score pairs)
         filtered_assignments = []
@@ -118,7 +142,20 @@ class GradeParser:
             filtered_assignments.append(current_assignment)
         
         self.assignments = filtered_assignments
-        
+        print(self.assignments)
+        assignments_with_max_points = []
+
+        # Now remove all the columns that don't have a max score
+        for index, assignment in enumerate(self.assignments):
+            true_max_points_index = index + start_index
+            print(index, assignment, max_points_row[true_max_points_index])
+            if max_points_row[true_max_points_index] is not None and self.is_actual_grade(max_points_row[true_max_points_index]):
+                assignments_with_max_points.append(assignment)
+                print("Added")
+
+        self.assignments = assignments_with_max_points
+        print(self.assignments)
+
         # Remove the assignment IDs to get clean titles
         self.assignment_titles = [" ".join(assignment.split(" ")[:-1]) for assignment in self.assignments]
 
@@ -160,3 +197,16 @@ class GradeParser:
         """
 
         return self.assignment_titles.copy()
+    
+    def get_assignment_max_points(self) -> list:
+        """
+        Returns the list of assignment max points
+
+        Parameters:
+            None
+
+        Returns:
+            list: The list of assignment max points
+        """
+
+        return self.assignment_max_points.copy()

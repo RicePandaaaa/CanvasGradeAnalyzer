@@ -3,6 +3,7 @@ from analyzer import Analyzer
 from grade_parser import GradeParser
 import polars as pl
 
+
 # Set page title
 st.set_page_config(page_title="Canvas Grade Analyzer", layout="wide")
 
@@ -39,9 +40,12 @@ if uploaded_file is not None:
                 
                 # Create analyzer (only happens once per file)
                 raw_assignment_titles = st.session_state.grade_parser.get_raw_assignment_titles()
+                max_points = st.session_state.grade_parser.get_assignment_max_points()
+
                 st.session_state.analyzer = Analyzer(
                     st.session_state.grade_parser.get_student_data(), 
-                    raw_assignment_titles
+                    raw_assignment_titles,
+                    max_points
                 )
                 
                 # Store current file name
@@ -50,7 +54,7 @@ if uploaded_file is not None:
                 st.success("File processed successfully!")
                 
             except Exception as e:
-                st.error(f"Error reading file: {str(e)}")
+                st.error(f"Error reading file: {e.message}")
                 st.write("Please make sure you uploaded a valid Canvas grade report file.")
                 # Clear session state on error
                 st.session_state.grade_parser = None

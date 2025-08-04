@@ -5,13 +5,14 @@ from student import Student
 import polars as pl
 
 class Analyzer:
-    def __init__(self, student_data: list[Student], assignments: list[str]) -> None:
+    def __init__(self, student_data: list[Student], assignments: list[str], assignment_max_points: list[float]) -> None:
         """
         Initializes the analyzer with the student data
 
         Parameters:
             student_data (list[Student]): The list of student data
             assignments (list[str]): The list of assignment titles
+            assignment_max_points (list[float]): The list of assignment max points
 
         Returns:
             None
@@ -19,6 +20,7 @@ class Analyzer:
 
         self.student_data = student_data
         self.assignments = assignments
+        self.assignment_max_points = assignment_max_points
         self.assignment_rankings = {}
         self.box_plots = {}
         self.histograms = {}
