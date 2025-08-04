@@ -83,6 +83,7 @@ class Analyzer:
         # Sort the students by their grades for each assignment
         for assignment in self.assignments:
             self.assignment_rankings[assignment] = dict(sorted(self.assignment_rankings[assignment].items(), key=lambda x: x[1], reverse=True))
+            self.anonymized_assignment_rankings[assignment] = dict(sorted(self.anonymized_assignment_rankings[assignment].items(), key=lambda x: x[1], reverse=True))
 
             # Extract the names and grades
             name_column = pl.Series(self.assignment_rankings[assignment].keys())
@@ -225,7 +226,7 @@ class Analyzer:
 
         for assignment in self.assignments:
             cleaned_assignment_rankings = self.get_students_with_grade(self.assignment_rankings[assignment])
-            fig = px.box(cleaned_assignment_rankings, y="Grade", color="Section", title=assignment)
+            fig = px.box(cleaned_assignment_rankings, y="Grade", color="Section")
             self.box_plots[assignment] = fig
 
     def get_box_plots(self) -> dict:
@@ -254,7 +255,7 @@ class Analyzer:
 
         for assignment in self.assignments:
             cleaned_assignment_rankings = self.get_students_with_grade(self.assignment_rankings[assignment])
-            fig = px.histogram(cleaned_assignment_rankings, x="Grade", color="Section", title=assignment)
+            fig = px.histogram(cleaned_assignment_rankings, x="Grade", color="Section", text_auto=True)
             self.histograms[assignment] = fig
     
     def get_histograms(self) -> dict:   
