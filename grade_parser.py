@@ -134,3 +134,29 @@ class GradeParser:
         """
 
         return self.student_data.copy()
+    
+    def get_raw_assignment_titles(self) -> list:
+        """
+        Returns the list of assignment titles
+
+        Parameters:
+            None
+
+        Returns:
+            list: The list of assignment titles
+        """
+
+        return self.assignments.copy()
+    
+    def get_assignment_titles(self) -> list:
+        """
+        Returns the list of assignment titles
+
+        Parameters:
+            None
+
+        Returns:
+            list: The list of assignment titles
+        """
+
+        return self.assignment_titles.copy()
